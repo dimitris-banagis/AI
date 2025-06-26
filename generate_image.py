@@ -23,3 +23,22 @@ def generate_image(prompt):
 if __name__ == "__main__":
     user_prompt = input("Περιγραφή εικόνας: ")
     generate_image(user_prompt)
+
+## 👑 Ο δημιουργός του: Δημήτρης Μπαναγής
+'''
+}
+
+# Write files to the project folder
+for filename, content in files.items():
+    with open(os.path.join(project_name, filename), "w", encoding="utf-8") as f:
+        f.write(content)
+
+# Create a zip file
+zip_path = f"/mnt/data/{project_name}.zip"
+with ZipFile(zip_path, "w") as zipf:
+    for root, dirs, files in os.walk(project_name):
+        for file in files:
+            filepath = os.path.join(root, file)
+            zipf.write(filepath, os.path.relpath(filepath, project_name))
+
+zip_path
