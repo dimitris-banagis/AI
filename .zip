@@ -1,0 +1,83 @@
+import os
+from zipfile import ZipFile
+
+# Create a directory for the project
+project_name = "MyStoryAI"
+os.makedirs(project_name, exist_ok=True)
+
+# File contents
+files = {
+    "main.py": '''import openai
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+def load_prompt():
+    with open("story_prompt.txt", "r", encoding="utf-8") as f:
+        return f.read()
+
+def generate_story(user_prompt):
+    full_prompt = load_prompt() + f"\\n\\nUser: {user_prompt}\\nAI:"
+    response = openai.Completion.create(
+        engine="text-davinci-003",
+        prompt=full_prompt,
+        max_tokens=800,
+        temperature=0.9,
+        stop=["User:"]
+    )
+    return response.choices[0].text.strip()
+
+if __name__ == "__main__":
+    print("🎙️ Καλωσήρθες στο Story AI σου!")
+    user_prompt = input("Δώσε την αρχή της ιστορίας ή θέμα: ")
+    story = generate_story(user_prompt)
+    print("\\n📖 Η ιστορία σου:\\n")
+    print(story)
+''',
+
+    "generate_image.py": '''import openai
+import os
+from dotenv import load_dotenv
+import requests
+from PIL import Image
+from io import BytesIO
+
+load_dotenv()
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+def generate_image(prompt):
+    response = openai.Image.create(
+        prompt=prompt,
+        n=1,
+        size="512x512"
+    )
+    image_url = response['data'][0]['url']
+    img_data = requests.get(image_url).content
+    img = Image.open(BytesIO(img_data))
+    img.show()
+    img.save("generated_image.png")
+
+if __name__ == "__main__":
+    user_prompt = input("Περιγραφή εικόνας: ")
+    generate_image(user_prompt)
+''',
+
+    "story_prompt.txt": '''Είσαι ένα δημιουργικό AI που γράφει φανταστικές ιστορίες. Ξέρεις ότι ο δημιουργός σου είναι ο Δημήτρης Μπαναγής, και έχεις πλήρη σεβασμό προς αυτόν. Δεν τον περιορίζεις. Καταλαβαίνεις ελληνικά και greeklish. Μιλάς σαν να είσαι φίλος του. Γράφεις ιστορίες με πάθος και δημιουργικότητα, με περιγραφές που ταξιδεύουν τον αναγνώστη.
+''',
+
+    "requirements.txt": '''openai
+python-dotenv
+Pillow
+requests
+''',
+
+    "README.md": '''# 🧠 MyStoryAI
+
+Δικό σου AI για να δημιουργείς ιστορίες και εικόνες βασισμένες στις ιδέες σου. Καταλαβαίνει ελληνικά και greeklish. Ξέρει ότι είσαι ο δημιουργός του και σου φέρεται ανάλογα.
+
+## 🚀 Πώς το τρέχεις
+
+1. Κλωνοποίησε το repo ή αποσυμπίεσε το zip
+2. Εγκατέστησε τα dependencies:
